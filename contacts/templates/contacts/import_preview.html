@@ -1,0 +1,84 @@
+{% extends 'admin/base_site.html' %}
+{% block content %}
+<h1>Fix Invalid Entries</h1>
+<form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="file_name" value="{{ file_name }}">
+    <table class="preview-table">
+        <thead>
+            <tr>
+                <th>Row</th>
+                <th>Name</th>
+                <th>Surname</th>
+                <th>Phone Number</th>
+                <th>Email</th>
+                <th>Birthday</th>
+                <th>Errors</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for entry in invalid_entries %}
+            <tr class="{% if entry.errors %}error-row{% endif %}">
+                <td>{{ entry.row_num }}</td>
+                <td>
+                    <input type="text" name="name_{{ entry.row_num }}" 
+                           value="{{ entry.original_data.name }}" style="width: 120px;">
+                </td>
+                <td>
+                    <input type="text" name="surname_{{ entry.row_num }}" 
+                           value="{{ entry.original_data.surname }}" style="width: 120px;">
+                </td>
+                <td>
+                    <input type="text" name="phone_{{ entry.row_num }}" 
+                           value="{{ entry.phone }}" 
+                           style="width: 150px;"
+                           class="{% if 'Missing country code' in entry.errors or 'Invalid characters' in entry.errors %}error-input{% endif %}">
+                </td>
+                <td>
+                    <input type="email" name="email_{{ entry.row_num }}" 
+                           value="{{ entry.original_data.email }}" style="width: 180px;">
+                </td>
+                <td>
+                    <input type="date" name="birthday_{{ entry.row_num }}" 
+                           value="{{ entry.original_data.birthday }}" style="width: 140px;">
+                </td>
+                <td style="color: red; max-width: 200px;">
+                    {{ entry.errors|join:", " }}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="form-actions">
+        <button type="submit" name="confirm_import" class="btn btn-primary">
+            Confirm and Import All Entries
+        </button>
+        <a href="{% url 'contacts:import_contacts' %}" class="btn btn-secondary">
+            Cancel Import
+        </a>
+    </div>
+</form>
+
+<style>
+.preview-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+.preview-table th, .preview-table td {
+    padding: 8px;
+    border: 1px solid #ddd;
+}
+.error-row {
+    background-color: #fff3f3;
+}
+.error-input {
+    border: 2px solid red;
+}
+.form-actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+</style>
+{% endblock %}
