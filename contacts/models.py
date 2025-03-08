@@ -36,16 +36,3 @@ class Contact(models.Model):
 
     def __str__(self):
         return f"{self.name} {self.surname}"
-
-class BirthdayMessage(models.Model):
-    recipient = models.ForeignKey(Contact, on_delete=models.CASCADE)
-    message = models.TextField()
-    scheduled_time = models.DateTimeField()
-    sent = models.BooleanField(default=False)
-    sent_at = models.DateTimeField(null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-
-class SendSettings(models.Model):
-    start_hour = models.PositiveIntegerField(default=9)  # 24h format
-    interval_minutes = models.PositiveIntegerField(default=2)
-    browser_tab_id = models.CharField(max_length=100, blank=True)
