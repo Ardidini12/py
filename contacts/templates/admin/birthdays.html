@@ -1,0 +1,57 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+<div class="birthday-panels">
+    <div class="today-birthdays">
+        <h2>Today's Birthdays</h2>
+        <ul>
+            {% for contact in today_birthdays %}
+            <li>{{ contact.name }} - {{ contact.phone_number }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <div class="scheduling">
+        <h2>Message Schedule</h2>
+        {% if SendSettings.exists %}
+        <div class="current-schedule">
+            <p>Next send window: {{ next_send_time|time }}</p>
+            <p>Interval between messages: {{ settings.interval_minutes }} minutes</p>
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label>Start Hour (0-23): 
+                    <input type="number" name="start_hour" 
+                           value="{{ settings.start_hour }}" 
+                           min="0" max="23" required>
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary">Update Schedule</button>
+        </form>
+    </div>
+    
+    <div class="message-history">
+        <h2>Recent Messages</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Recipient</th>
+                    <th>Status</th>
+                    <th>Scheduled Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for msg in recent_messages %}
+                <tr>
+                    <td>{{ msg.recipient.name }}</td>
+                    <td>{% if msg.sent %}Sent{% else %}Pending{% endif %}</td>
+                    <td>{{ msg.scheduled_time|time }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %} 
